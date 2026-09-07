@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apps &amp; Tools — Chaim Goodman-Strauss</title>
+<style>
+  :root{
+    color-scheme: light;
+    --page:#f9f9f7; --surface:#fcfcfb; --text:#0b0b0b;
+    --text-2:#52514e; --muted:#898781; --hairline:#e1e0d9; --link:#2f5db0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      color-scheme: dark;
+      --page:#0d0d0d; --surface:#1a1a19; --text:#ffffff;
+      --text-2:#c3c2b7; --muted:#898781; --hairline:#2c2c2a; --link:#8fb3ff;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--page); color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5; padding:48px 24px 64px;
+  }
+  main{max-width:720px; margin:0 auto;}
+  h1{font-size:1.5rem; margin:0 0 4px;}
+  .lede{color:var(--text-2); margin:0 0 36px;}
+  ul{list-style:none; margin:0; padding:0;}
+  li{
+    border-top:1px solid var(--hairline); padding:20px 0;
+  }
+  li:last-child{border-bottom:1px solid var(--hairline);}
+  .name{font-size:1.05rem; font-weight:600;}
+  .name a{color:var(--link); text-decoration:none;}
+  .name a:hover{text-decoration:underline;}
+  .desc{color:var(--text-2); margin:4px 0 0;}
+  .sub{margin:8px 0 0; font-size:.9rem; color:var(--muted);}
+  .sub a{color:var(--link); text-decoration:none;}
+  .sub a:hover{text-decoration:underline;}
+  footer{margin-top:40px; color:var(--muted); font-size:.85rem;}
+</style>
+</head>
+<body>
+<main>
+  <h1>Apps &amp; Tools</h1>
+  <p class="lede">Homegrown things living on chaimgoodmanstrauss.com.</p>
+
+  <ul>
+    <li>
+      <div class="name"><a href="/symmetrystroller/">Symmetry Stroller</a></div>
+      <p class="desc">On-site editor and viewer for guided symmetry walks — shoot, tag, and annotate wallpaper-group patterns in the field, then browse them as a map-linked photo essay.</p>
+    </li>
+
+    <li>
+      <div class="name"><a href="/SymmetryStrolls/bedstysymmetrywalk.html">Symmetry Strolls</a></div>
+      <p class="desc">Published, self-contained symmetry walks.</p>
+      <p class="sub">
+        <a href="/SymmetryStrolls/bedstysymmetrywalk.html">Bed-Stuy walk</a> ·
+        <a href="/SymmetryStrolls/fifthavesymmetrywalk.html">Fifth Avenue walk</a>
+      </p>
+    </li>
+
+    <li>
+      <div class="name"><a href="/routetool/">Route Tool</a></div>
+      <p class="desc">Personal pedestrian route planner with a walk diary and coverage heatmap.</p>
+      <p class="sub"><a href="/routetool/mobile.html">Mobile logger</a></p>
+    </li>
+
+    <li>
+      <div class="name"><a href="/4DLO/">Hyperbolic Light Orchestra</a></div>
+      <p class="desc">WebGL viewer for hyperbolic light-orchestra models, plus a set of scratch tools built alongside it.</p>
+      <p class="sub">
+        <a href="/4DLO/functiondrawer.html">Function graph drawer</a> ·
+        <a href="/4DLO/surfacetester.html">Surface tester</a> ·
+        <a href="/4DLO/sound.html">Sound</a>
+      </p>
+    </li>
+
+    <li>
+      <div class="name"><a href="/apps/factors.html">Factors</a></div>
+      <p class="desc">Interactive factorization playground. Also at <a href="/factors">/factors</a>.</p>
+    </li>
+
+    <li>
+      <div class="name"><a href="/iso_discomfort.html">Iso-Discomfort Surfaces</a></div>
+      <p class="desc">Explorer for iso-discomfort surfaces.</p>
+    </li>
+
+    <li>
+      <div class="name"><a href="/downloads/FiveMinuteMath.pdf">Five-Minute Math</a></div>
+      <p class="desc">PDF collection of short math activities.</p>
+    </li>
+  </ul>
+
+  <footer>Last updated 2026-09-07.</footer>
+</main>
+</body>
+</html>
