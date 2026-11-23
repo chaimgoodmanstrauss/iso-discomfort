@@ -1,0 +1,9 @@
+{
+  "name": "Iso-Discomfort Surfaces",
+  "cat": "Maps & Data",
+  "icon": "contour",
+  "desc": "Ugh, how uncomfortable was that humid summer run?",
+  "path": "iso_discomfort",
+  "live": true,
+  "img": "icons/contour.jpg"
+}
