@@ -22,7 +22,7 @@ the fetch fails the app still works; the dot is just omitted.
 
 ## Deploy
 
-SFTP only (shared cPanel host). Credentials in `~/.symmetrystroller_deploy.env`
+SFTP only (shared cPanel host). Credentials in `~/Archive/Programming/Top Secret/symmetrystroller_deploy.env`
 (outside any repo). Both files sit at the domain web root, `public_html/`:
 
     sftp -> put iso_discomfort.html public_html/iso_discomfort.html
