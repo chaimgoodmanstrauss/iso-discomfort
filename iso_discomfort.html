@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Iso-Discomfort Surfaces</title>
+<title>Iso-discomfort chart</title>
 <style>
   :root{
     color-scheme: light;
@@ -28,7 +28,7 @@
     font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
     padding:20px 24px 32px;
   }
-  h1{font-size:1.15rem; font-weight:600; margin:0 0 6px;}
+  h1{font-size:1.15rem; font-weight:600; margin:0 0 14px; max-width:760px; line-height:1.35;}
   p.lede{color:var(--text-secondary); font-size:0.92rem; line-height:1.5; max-width:780px; margin:0 0 14px;}
   .card{
     background:var(--surface-1); border:1px solid var(--hairline);
@@ -37,46 +37,26 @@
   .controls{display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap;}
   .controls label{font-size:0.85rem; color:var(--text-secondary); white-space:nowrap;}
   .controls input[type=range]{flex:1; min-width:180px; accent-color:#eb6834;}
-  .controls .val{font-size:0.9rem; font-weight:600; min-width:78px; text-align:right;}
+  .controls .val{font-size:0.9rem; font-weight:600; min-width:21em; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums;}  /* fixed width: the slider doesn't resize as the label changes */
   .toggle-row{display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:0.85rem; color:var(--text-secondary);}
   .toggle-row input[type=checkbox]{accent-color:#eb6834; width:15px; height:15px;}
   .toggle-row .windVal{font-weight:600; color:var(--text-primary);}
   #wrap{position:relative; width:100%; max-width:680px; margin:0 auto;}
   canvas{display:block; width:100%; height:auto; border-radius:6px;}
-  #overlay{position:absolute; top:0; left:0; pointer-events:none;}
-  #readout{
-    margin-top:8px; font-size:0.85rem; color:var(--text-secondary); min-height:1.3em;
-  }
-  #readout b{color:var(--text-primary);}
-  #current{margin-top:4px; font-size:0.85rem; color:var(--text-secondary); min-height:1.3em;}
+  #current{margin-top:8px; font-size:0.85rem; color:var(--text-secondary); min-height:1.3em;}
   #current b{color:var(--text-primary);}
-  .levels{
-    display:flex; flex-wrap:wrap; gap:10px 18px; margin:14px 2px 0;
-    font-size:0.82rem; color:var(--text-secondary); max-width:760px;
-  }
-  .levels span.dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px;}
-  .note{color:var(--muted); font-size:0.78rem; max-width:780px; margin-top:16px; line-height:1.5;}
+  .about{max-width:760px; margin-top:22px; color:var(--text-secondary); font-size:0.9rem; line-height:1.5;}
+  .about h2{font-size:0.98rem; font-weight:600; color:var(--text-primary); margin:18px 0 4px;}
+  .about p{margin:0 0 6px;}
+  .about ul{margin:0 0 6px; padding-left:20px;}
+  .about li{margin:0 0 4px;}
+  .about code{font-size:0.85em;}
 </style>
 </head>
 <body>
 
-<h1>Iso-discomfort surfaces: NYC summer &ldquo;feels like&rdquo;, running pace</h1>
-<p class="lede">
-The Steadman AT formula (previous version) implicitly assumes something close
-to a resting body &mdash; it has no metabolic-rate input at all. A working
-muscle can put out 5&ndash;15&times; resting heat output, and in still air that
-extra heat has to leave almost entirely through sweat evaporation, which
-humidity throttles. Ambient wind stays fixed at <b>0 mph</b> (worst case, no breeze); the slider
-runs on <b>running pace</b> for a 160&nbsp;lb, 5&#8242;10&#8243; man, 6:00&ndash;12:00
-/mi, then jumps to one final stop: a 20:00 /mi gentle walk, treated here as
-&asymp; no exertion (below). Pace &rarr; speed &rarr; VO<sub>2</sub> &rarr;
-watts via the ACSM running equation (metabolic rate scales with body mass,
-not height), then feeds the same exertion-offset model as before &mdash;
-still a rule-of-thumb shift, not a solved heat-balance model (that would be
-WBGT / ISO&nbsp;7933). A body moving through still air still feels wind
-&mdash; its own ground speed, right in its face &mdash; so a toggle below lets
-that self-generated airflow count even with zero ambient wind.
-</p>
+<h1>Iso-discomfort chart</h1>
+<p class="lede">Based on the relative humidity, the temperature, how fast you&rsquo;re running, just how bad is it?</p>
 
 <div class="card">
   <div class="controls">
@@ -91,46 +71,49 @@ that self-generated airflow count even with zero ambient wind.
   </div>
   <div id="wrap">
     <canvas id="heat" width="640" height="440"></canvas>
-    <canvas id="overlay" width="640" height="440"></canvas>
   </div>
-  <div id="readout">Move your cursor over the chart to read a value.</div>
   <div id="current">Fetching current NYC conditions&hellip;</div>
 </div>
 
-<div class="levels" id="legend"></div>
+<div class="about">
+<h2>What the chart shows</h2>
+<p>Across: air temperature (50&ndash;100&deg;F). Up: relative humidity (30&ndash;95%).
+Colour and the labelled isotherms: how hot it <i>feels</i> to a runner at the pace
+on the slider, in still air. The &ldquo;now&rdquo; dot is the current temperature and
+humidity in New York City (from Open-Meteo); if it falls outside the box it sits
+clamped at the edge.</p>
 
-<p class="note">
-Base field: Steadman/Australian-BOM apparent temperature,
-<code>AT = T + 0.33&middot;e &minus; 0.70&middot;v &minus; 4.0</code>, <code>e</code>
-the vapor pressure from T and RH. <code>v</code> is ambient wind (0, fixed)
-plus &mdash; when the toggle is on &mdash; the runner's own ground speed,
-since moving through calm air creates the same relative airflow a breeze
-would. Pace&rarr;watts: speed = 1&nbsp;mi / pace; VO<sub>2</sub>
-(mL&middot;kg&#8315;&sup1;&middot;min&#8315;&sup1;) = 0.2&middot;speed(m/min) + 3.5
-(ACSM, level ground); METs = VO<sub>2</sub>/3.5; watts = METs &times; 3.5
-&times; 72.6&nbsp;kg &divide; 200 &times; 69.78 (72.6&nbsp;kg = 160&nbsp;lb;
-height doesn't enter &mdash; these equations scale with mass only). Exertion
-adds <code>&Delta;AT = k(watts) &times; (0.35 + 0.65&middot;RH/100) &times;
-1/(1+0.06&middot;v<sub>mph</sub>)</code>&deg;F, with <code>k = max(0,
-(watts&minus;100)/24)</code>: the humidity factor is evaporative cooling
-degrading as air nears saturation, and the last factor is relative airflow
-partly relieving that (diminishing returns, never all the way to zero &mdash;
-sweat still can't evaporate infinitely fast). This is one of several "feels like"
-formulas in use &mdash; the US NWS instead switches between a Heat Index
-(T + RH only) and Wind Chill (T + wind only), never a true 3D field. Box
-tailored to NYC conditions (50&ndash;100&deg;F, 30&ndash;95% RH); the
-hot+humid corner (100&deg;F at 95% RH) is rarer here than the box implies,
-since local dew points seldom exceed the upper 70s&deg;F even at peak
-humidity. The final slider stop (20:00 /mi, a gentle walk, &asymp;3.3 MET /
-&asymp;290 W by the ACSM walking equation &mdash; roughly 3&times; resting, not
-literally zero) is deliberately pinned to zero exertion offset here: at that
-low an output, radiation and convection alone comfortably carry the extra
-heat even at 0 mph, so treating it as the "no exertion" baseline is a
-reasonable simplification for this tool, unlike real running paces where
-evaporation dominates and the shift is large. Treat all magnitudes as
-illustrative, not medical guidance. No external libraries &mdash; everything
-is computed and drawn locally.
-</p>
+<h2>Why running changes the answer</h2>
+<p>Ordinary &ldquo;feels like&rdquo; formulas, like the Steadman apparent temperature
+used here as the base, assume a body at rest &mdash; they have no input for how hard
+you&rsquo;re working. A working muscle puts out 5&ndash;15&times; resting heat, and in
+still air that extra heat has to leave almost entirely by sweat evaporation, which
+humidity throttles. So the faster you run and the muggier it is, the further the
+&ldquo;feels like&rdquo; temperature climbs above the resting value.</p>
+
+<h2>The runner and the slider</h2>
+<ul>
+<li><b>Runner:</b> 160&nbsp;lb, 5&#8242;10&#8243; (height doesn&rsquo;t enter &mdash; the equations scale with body mass only).</li>
+<li><b>MET</b> (metabolic equivalent): energy use as a multiple of resting. 1&nbsp;MET is sitting still (&asymp;1&nbsp;kcal per kg per hour, about 88&nbsp;W for this runner); a 9:00&nbsp;/mi run is &asymp;11&nbsp;MET. The pace caption shows both MET and watts (W), the heat output that drives the &ldquo;feels like&rdquo; shift.</li>
+<li><b>Pace:</b> 6:00&ndash;12:00 /mi in 15-second steps, then one final stop: a 20:00 /mi gentle walk. That walk is really &asymp;3.3 MET / &asymp;290&nbsp;W, about 3&times; resting, but is treated as <i>no exertion</i>: at that output, radiation and convection carry the extra heat even in calm air.</li>
+<li><b>Wind:</b> ambient wind is fixed at 0&nbsp;mph (worst case). The checkbox lets the runner&rsquo;s own ground speed count as a headwind, since moving through calm air creates the same relative airflow a breeze would.</li>
+</ul>
+
+<h2>How it&rsquo;s computed</h2>
+<ul>
+<li><b>Base &ldquo;feels like&rdquo;</b> (Steadman / Australian BOM): <code>AT = T + 0.33&middot;e &minus; 0.70&middot;v &minus; 4.0</code> (&deg;C), <code>e</code> = vapour pressure from T and RH, <code>v</code> = wind in m/s (0, plus the runner&rsquo;s speed if the checkbox is on).</li>
+<li><b>Pace &rarr; watts</b> (ACSM running equation, level ground): speed = 1&nbsp;mi / pace; VO<sub>2</sub> = 0.2&middot;speed(m/min) + 3.5 mL&middot;kg&#8315;&sup1;&middot;min&#8315;&sup1;; METs = VO<sub>2</sub>/3.5; watts = METs &times; 3.5 &times; 72.6&nbsp;kg &divide; 200 &times; 69.78.</li>
+<li><b>Exertion offset:</b> <code>&Delta;AT = k &times; (0.35 + 0.65&middot;RH/100) &times; 1/(1 + 0.06&middot;v<sub>mph</sub>)</code>&nbsp;&deg;F, with <code>k = max(0, (watts &minus; 100)/24)</code>. The humidity factor is evaporative cooling failing as air nears saturation; the last factor is airflow partly relieving that, with diminishing returns.</li>
+</ul>
+
+<h2>Caveats</h2>
+<ul>
+<li>The exertion offset is a rule-of-thumb shift, not a solved heat-balance model (that would be WBGT / ISO&nbsp;7933). Treat all magnitudes as illustrative, not medical guidance.</li>
+<li>This is one of several &ldquo;feels like&rdquo; formulas. The US NWS instead switches between a Heat Index (T + RH only) and Wind Chill (T + wind only), never a true 3-D field.</li>
+<li>The box is sized for NYC summers. Its hot, humid corner (100&deg;F at 95% RH) is rarer than it looks: local dew points seldom pass the upper 70s&deg;F.</li>
+<li>No external libraries; everything is computed and drawn in the page.</li>
+</ul>
+</div>
 
 <script>
 (function(){
@@ -201,8 +184,6 @@ is computed and drawn locally.
 
   const heat = document.getElementById('heat');
   const hctx = heat.getContext('2d');
-  const overlay = document.getElementById('overlay');
-  const octx = overlay.getContext('2d');
   const W = heat.width, H = heat.height;
   const padL = 54, padB = 34, padT = 10, padR = 22;
   const plotW = W - padL - padR, plotH = H - padT - padB;
@@ -228,6 +209,7 @@ is computed and drawn locally.
     }
     hctx.clearRect(0,0,W,H);
     hctx.putImageData(img, padL, padT);
+    drawIsotherms(watts, windMph);
 
     // axes
     hctx.save();
@@ -260,6 +242,65 @@ is computed and drawn locally.
     hctx.restore();
   }
 
+  // Isotherm lines at each LEVEL (marching squares), labelled "90°" etc.
+  function drawIsotherms(watts, windMph){
+    const S = 6;
+    const nx = Math.ceil(plotW/S), ny = Math.ceil(plotH/S);
+    const val = [];
+    for(let j=0;j<=ny;j++){
+      const py = Math.min(j*S, plotH), RH = RHMAX - py/plotH*(RHMAX-RHMIN);
+      const row = [];
+      for(let i=0;i<=nx;i++){
+        const px = Math.min(i*S, plotW), Tf = TMIN + px/plotW*(TMAX-TMIN);
+        row.push(feelsLikeExertionF(Tf, RH, watts, windMph));
+      }
+      val.push(row);
+    }
+    const X = i => padL + Math.min(i*S, plotW), Y = j => padT + Math.min(j*S, plotH);
+    hctx.save();
+    hctx.beginPath(); hctx.rect(padL, padT, plotW, plotH); hctx.clip();
+    LEVELS.forEach(L => {
+      const segs = [];
+      for(let j=0;j<ny;j++) for(let i=0;i<nx;i++){
+        const c = [[i,j],[i+1,j],[i+1,j+1],[i,j+1]];
+        const pts = [];
+        for(let k=0;k<4;k++){
+          const [ai,aj] = c[k], [bi,bj] = c[(k+1)%4];
+          const a = val[aj][ai], b = val[bj][bi];
+          if((a<L) !== (b<L)){
+            const t = (L-a)/(b-a);
+            pts.push([X(ai)+(X(bi)-X(ai))*t, Y(aj)+(Y(bj)-Y(aj))*t]);
+          }
+        }
+        if(pts.length===2) segs.push([pts[0],pts[1]]);
+        else if(pts.length===4){ segs.push([pts[0],pts[1]]); segs.push([pts[2],pts[3]]); }
+      }
+      if(!segs.length) return;
+      hctx.beginPath();
+      segs.forEach(([p,q]) => { hctx.moveTo(p[0],p[1]); hctx.lineTo(q[0],q[1]); });
+      hctx.strokeStyle = 'rgba(20,10,5,0.55)'; hctx.lineWidth = 1.4; hctx.stroke();
+      // label at the middle of the curve, kept away from the plot edges
+      const m = 18;
+      const inner = segs.filter(([p]) => p[0]>padL+m && p[0]<padL+plotW-m && p[1]>padT+m && p[1]<padT+plotH-m);
+      const pool = inner.length ? inner : segs;
+      pool.sort((a,b) => (a[0][0]-a[0][1]) - (b[0][0]-b[0][1]));
+      const [p,q] = pool[Math.floor(pool.length/2)];
+      let ang = Math.atan2(q[1]-p[1], q[0]-p[0]);
+      if(ang > Math.PI/2) ang -= Math.PI; else if(ang < -Math.PI/2) ang += Math.PI;
+      hctx.save();
+      hctx.translate((p[0]+q[0])/2, (p[1]+q[1])/2);
+      hctx.rotate(ang);
+      hctx.font = 'bold 12px system-ui, sans-serif';
+      hctx.textAlign = 'center'; hctx.textBaseline = 'middle';
+      const txt = L + '°';
+      hctx.lineWidth = 4; hctx.strokeStyle = 'rgba(255,255,255,0.92)'; hctx.lineJoin = 'round';
+      hctx.strokeText(txt, 0, 0);
+      hctx.fillStyle = '#1c0801'; hctx.fillText(txt, 0, 0);
+      hctx.restore();
+    });
+    hctx.restore();
+  }
+
   function formatPace(pace){
     const m = Math.floor(pace);
     const s = Math.round((pace-m)*60);
@@ -280,7 +321,7 @@ is computed and drawn locally.
       return formatPace(state.pace) + ' (' + speedMph.toFixed(1) + ' mph, ~' + METs.toFixed(1) + ' MET, ~' + Math.round(watts) + ' W)';
     }
     const {speedMph, METs, watts} = metabolicPower(state.pace, 0.1); // ACSM walking eq.
-    return formatPace(state.pace) + ' gentle walk (' + speedMph.toFixed(1) + ' mph, ~' + METs.toFixed(1) + ' MET, ~' + Math.round(watts) + ' W) ≈ no exertion';
+    return formatPace(state.pace) + ' walk (' + speedMph.toFixed(1) + ' mph, ~' + METs.toFixed(1) + ' MET, ~' + Math.round(watts) + ' W)';
   }
 
   // Current observed conditions (fetched once from Open-Meteo); null until it lands.
@@ -289,27 +330,23 @@ is computed and drawn locally.
   function drawCurrentMarker(){
     if(!currentCond) return;
     const {Tf, RH} = currentCond;
-    const inRange = Tf>=TMIN && Tf<=TMAX && RH>=RHMIN && RH<=RHMAX;
     const cTf = Math.max(TMIN, Math.min(TMAX, Tf));
     const cRH = Math.max(RHMIN, Math.min(RHMAX, RH));
     const x = padL + (cTf-TMIN)/(TMAX-TMIN)*plotW;
     const y = padT + (RHMAX-cRH)/(RHMAX-RHMIN)*plotH;
     hctx.save();
-    hctx.lineWidth = 2;
-    hctx.strokeStyle = '#0b0b0b';
-    hctx.fillStyle = inRange ? '#ffffff' : 'rgba(255,255,255,0.35)';
-    // white halo so it reads on any bin colour
-    hctx.beginPath(); hctx.arc(x,y,7,0,2*Math.PI); hctx.fillStyle='rgba(255,255,255,0.9)'; hctx.fill();
-    hctx.beginPath(); hctx.arc(x,y,5,0,2*Math.PI);
-    hctx.fillStyle = inRange ? '#0b0b0b' : 'rgba(11,11,11,0.35)';
-    hctx.fill();
-    hctx.beginPath(); hctx.arc(x,y,5,0,2*Math.PI); hctx.strokeStyle='#ffffff'; hctx.lineWidth=1.5; hctx.stroke();
-    hctx.font = 'bold 11px system-ui, sans-serif';
-    hctx.fillStyle = getComputedStyle(document.body).getPropertyValue('color') || '#0b0b0b';
+    hctx.beginPath(); hctx.arc(x,y,13,0,2*Math.PI); hctx.fillStyle='#ffffff'; hctx.fill();
+    hctx.beginPath(); hctx.arc(x,y,10,0,2*Math.PI); hctx.fillStyle='#0b0b0b'; hctx.fill();
+    hctx.beginPath(); hctx.arc(x,y,4,0,2*Math.PI); hctx.fillStyle='#ffffff'; hctx.fill();
+    hctx.font = 'bold 16px system-ui, sans-serif';
     hctx.textAlign = x > padL+plotW*0.75 ? 'right' : 'left';
-    hctx.textBaseline = 'bottom';
-    const dx = hctx.textAlign === 'right' ? -9 : 9;
-    hctx.fillText('now', x+dx, y-2);
+    hctx.textBaseline = y < padT+24 ? 'top' : 'bottom';
+    const dx = hctx.textAlign === 'right' ? -14 : 14;
+    const dy = hctx.textBaseline === 'top' ? 6 : -6;
+    hctx.lineWidth = 5; hctx.lineJoin = 'round'; hctx.strokeStyle = '#ffffff';
+    hctx.strokeText('now', x+dx, y+dy);
+    hctx.fillStyle = '#0b0b0b';
+    hctx.fillText('now', x+dx, y+dy);
     hctx.restore();
   }
 
@@ -348,48 +385,8 @@ is computed and drawn locally.
 
   document.getElementById('pace').addEventListener('input', render);
   document.getElementById('airflow').addEventListener('change', render);
+
   render();
-
-  // hover readout + crosshair
-  const readout = document.getElementById('readout');
-  function handleMove(clientX, clientY){
-    const rect = heat.getBoundingClientRect();
-    const scale = W/rect.width;
-    const px = (clientX-rect.left)*scale, py = (clientY-rect.top)*scale;
-    octx.clearRect(0,0,W,H);
-    if(px<padL || px>padL+plotW || py<padT || py>padT+plotH){
-      readout.textContent = 'Move your cursor over the chart to read a value.';
-      return;
-    }
-    const {Tf,RH} = pxToData(px,py);
-    const i = +document.getElementById('pace').value;
-    const state = sliderIndexToState(i);
-    const airflowOn = document.getElementById('airflow').checked;
-    const windMph = airflowOn ? stateSpeedMph(state) : 0;
-    const watts = stateToWatts(state);
-    const base = feelsLikeF(Tf,RH,windMph);
-    const add = exertionOffsetF(watts, RH, windMph);
-    const v = base + add;
-    octx.strokeStyle = 'rgba(11,11,11,0.55)';
-    octx.lineWidth = 1;
-    octx.beginPath(); octx.moveTo(px,padT); octx.lineTo(px,padT+plotH); octx.stroke();
-    octx.beginPath(); octx.moveTo(padL,py); octx.lineTo(padL+plotW,py); octx.stroke();
-    const addTxt = add > 0.05 ? ' (base '+base.toFixed(0)+'°F + '+add.toFixed(0)+'°F exertion)' : ' (no exertion offset)';
-    const paceLabel = state.type==='run' ? formatPace(state.pace) : formatPace(state.pace)+' walk';
-    const windTxt = windMph > 0.05 ? ', '+windMph.toFixed(1)+' mph relative wind' : ', calm air';
-    readout.innerHTML = 'Air temp <b>'+Tf.toFixed(0)+'°F</b>, RH <b>'+RH.toFixed(0)+'%</b>'+windTxt+', <b>'+paceLabel+'</b> &rarr; feels like <b>'+v.toFixed(0)+'°F</b>'+addTxt;
-  }
-  heat.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
-  heat.addEventListener('mouseleave', () => { octx.clearRect(0,0,W,H); readout.textContent='Move your cursor over the chart to read a value.'; });
-
-  // legend
-  const labels = ['<80°F — mild, still comfortable','80–90°F — warm, some caution','90–100°F — hot, heat-caution','100–110°F — dangerous heat','110–120°F — very dangerous','120–140°F — extreme danger','140–160°F — off the charts','>160°F — model saturating (illustrative only)'];
-  const legendEl = document.getElementById('legend');
-  COLORS.forEach((c,i)=>{
-    const d = document.createElement('div');
-    d.innerHTML = '<span class="dot" style="background:'+c+'"></span>'+labels[i];
-    legendEl.appendChild(d);
-  });
 })();
 </script>
 
